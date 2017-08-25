@@ -1,0 +1,197 @@
+<md-sidenav-container fullscreen style="background-color:#0091ea">
+  <md-toolbar style="background-color:#0091ea; color:white;">                      <!-- toolbar starts -->
+    <button md-icon-button (click)="sidenav.open()"><md-icon>menu</md-icon></button>
+    <div style="margin-left: 20px;">
+      <md-icon style="vertical-align:middle; margin-right:5px;">train</md-icon>
+      TOURAIL
+    </div>
+    <button md-icon-button [mdMenuTriggerFor]="menu" style="position:absolute; right: 20px;"><md-icon>more_vert</md-icon></button>
+    <md-menu #menu="mdMenu">
+      <md-nav-list>
+        <button md-menu-item (click)="this.app.setV(1)">PNR Status Enquiry</button>
+        <button md-menu-item (click)="this.app.setV(2)">Seat Availability</button>
+        <button md-menu-item (click)="this.app.setV(3)">Train Route</button>
+        <button md-menu-item (click)="this.app.setV(4)">Train Fare</button>
+        <button md-menu-item (click)="this.app.setV(5)">Running Train Status</button>
+        <button md-menu-item routerLink="hi">Go To Hindi Site</button>
+      </md-nav-list>
+    </md-menu>
+  </md-toolbar>                                                                     <!-- toolbar ends -->
+                                                 <!-- homecontent ends -->
+  <md-sidenav #sidenav mode="over">
+    <div *ngIf="!!this.stnserv.curr_stn">
+      <md-nav-list>
+        <a md-list-item (click)="sidenav.close()" style="color:grey">CLOSE <md-icon>close</md-icon></a>
+        <a md-list-item (click)="sidenav.close();this.homecontent=true;this.wipeBase();" style="background-color:#0091ea; color:white">Start A New Virtual Tour<md-icon style="padding:5px">search</md-icon></a>
+        <a md-list-item (click)="showEntries=!showEntries">Entries</a>
+        <div *ngIf="showEntries" [@animate]="'fadeInLeft'">
+          <md-list-item *ngFor="let i of this.entry_keys" (click)="sidenav.close();this.showSidenav(i,'Entry');" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</md-list-item>
+        </div>
+        <a md-list-item (click)="showExits=!showExits"> Exits</a>
+        <div *ngIf="showExits" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.exit_keys" (click)="sidenav.close();this.showSidenav(i,'Exit');" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a md-list-item (click)="sidenav.close();this.showSidenav('','Enquiry')"> Enquiry Office</a>
+        <a md-list-item (click)="showReservations=!showReservations"> TIcket Counter</a>
+        <div *ngIf="showReservations" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.ticket_counter_keys" (click)="sidenav.close();this.showSidenav(i,'Ticket');" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a md-list-item (click)="showOffices=!showOffices"> Other Offices</a>
+        <div *ngIf="showOffices" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of ['Station Master','Railway Police Force','TTE ( Train Ticket Examiner )','Railway Engineer','GRP Office']" (click)="sidenav.close();this.showSidenav('',i);" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a md-list-item (click)="showPlatforms=!showPlatforms"> Platforms</a>
+        <div *ngIf="showPlatforms">
+          <div *ngIf="this.is_stair">
+            <a md-list-item [@animate]="'fadeInLeft'" (click)="showStairs=!showStairs" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"> Platform Stairs</a>
+              <div *ngIf="showStairs" [@animate]="'fadeInLeft'">
+                <a md-list-item *ngFor="let i of this.pf_stair_entries" (click)="sidenav.close();this.showSidenav(i[0],'stair')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">Platform {{this.pf_stair_entries.indexOf(i)+1}}</a>
+              </div>
+          </div>
+          <div *ngIf="this.is_under">
+            <a md-list-item [@animate]="'fadeInLeft'" (click)="showUnder=!showUnder" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"> Platform UnderGround</a>
+            <div *ngIf="showUnder" [@animate]="'fadeInLeft'">
+              <a md-list-item *ngFor="let i of this.pf_under_entries" (click)="sidenav.close();this.showSidenav(i[0],'under')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">Platform {{this.pf_under_entries.indexOf(i)+1}}</a>
+            </div>
+          </div>
+          <div *ngIf="this.is_slope">
+            <a md-list-item [@animate]="'fadeInLeft'" (click)="showSlope=!showSlope" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"> Platform Slope</a>
+            <div *ngIf="showSlope" [@animate]="'fadeInLeft'">
+              <a md-list-item *ngFor="let i of this.pf_slope_entries" (click)="sidenav.close();this.showSidenav(i[0],'slope')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">Platform {{this.pf_slope_entries.indexOf(i)+1}}</a>
+            </div>
+          </div>
+          <div *ngIf="this.is_escl">
+            <a md-list-item [@animate]="'fadeInLeft'" (click)="showEscl=!showEscl" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"> Platform Escalator</a>
+            <div *ngIf="showEscl" [@animate]="'fadeInLeft'">
+              <a md-list-item *ngFor="let i of this.pf_escl_entries" (click)="sidenav.close();this.showSidenav(i[0],'escl')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">Platform {{this.pf_escl_entries.indexOf(i)+1}}</a>
+            </div>
+          </div>
+        </div>
+        <a *ngIf="is_waitingroom" md-list-item (click)="showWaiting=!showWaiting"> Waiting Rooms</a>
+        <div *ngIf="showWaiting">
+          <a md-list-item *ngFor="let i of this.pf_slope_entries" (click)="sidenav.close();this.showSidenav(i[0],'slope')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">Platform {{this.pf_slope_entries.indexOf(i)+1}}</a>
+        </div>
+        <a *ngIf="is_cloakroom" md-list-item (click)="sidenav.close();this.showSidenav('','cloak')"> Cloak Room</a>
+        <a md-list-item (click)="showCommodities=!showCommodities;"> Commodities </a>
+        <div *ngIf="showCommodities" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.commodity_keys" (click)="sidenav.close();this.commoditySearch(i);" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a md-list-item *ngIf="is_divyang"(click)="showDivyang=!showDivyang"> Divyang Facilities</a>
+        <div *ngIf="showDivyang" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.divyang_keys" (click)="sidenav.close();this.showSidenav(i,'divyang')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a  md-list-item (click)="shownearby=!shownearby"> Nearby Facilities</a>
+        <div *ngIf="shownearby" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.nearby_keys" (click)="sidenav.close();this.plotme(i)" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+        <a *ngIf="is_other" md-list-item (click)="showOthers=!showOthers"> Other Facilities</a>
+        <div *ngIf="showOthers" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of this.other_keys" (click)="sidenav.close();this.showSidenav(i,'other')" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+
+        <a md-list-item (click)="showFood=!showFood"> Food Menu</a>
+        <div *ngIf="showFood" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of ['Veg Breakfast 25 Rs','Nonveg Breakfast 30 Rs','Veg Meal 45 Rs','Nonveg Meal 50 Rs','Veg Thali 35 Rs','Non Veg Thali 40 Rs','Economy Food 15 Rs']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+          <a md-list-item [@animate]="'fadeInLeft'" (click)="showBevarages=!showBevarages" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"><b> Beverages</b></a>
+          <div *ngIf="showBevarages">
+          <a md-list-item [@animate]="'fadeInLeft'" *ngFor="let i of ['Tea standard 5 Rs' , 'Tea - bag  7 Rs' , 'Tea - pot 10 Rs' , 'coffee 7 Rs', 'coffee pot 15 Rs', 'Water 500ml 10Rs' , 'Water 1 liter 15 Rs']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#0288d1; padding-left: 30px;">{{i}}</a>
+        </div>
+        </div>
+        <a md-list-item (click)="showContacts=!showContacts"> Railway Helplines</a>
+        <div *ngIf="showContacts" [@animate]="'fadeInLeft'">
+          <a md-list-item *ngFor="let i of ['Customer Care No.- 011-39340000','Fax no. 011-23345400','Security 182','Medical 138','PNR 139','Clean My Coach 58888']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+        </div>
+      </md-nav-list>
+    </div>
+    <div [@animate]="'fadeIn'" *ngIf="!this.stnserv.curr_stn">
+        <md-nav-list>
+          <a md-list-item (click)="sidenav.close()" style="color:grey; background-color: #eeeeee;">CLOSE</a>
+          <a md-list-item (click)="sidenav.close()"><span style="color:#d50000;">Please search a station for more options</span></a>
+          <a md-list-item (click)="showFood=!showFood"> Food Menu</a>
+          <div *ngIf="showFood" [@animate]="'fadeInLeft'">
+            <a md-list-item *ngFor="let i of ['Veg Breakfast 25 Rs','Nonveg Breakfast 30 Rs','Veg Meal 45 Rs','Nonveg Meal 50 Rs','Veg Thali 35 Rs','Non Veg Thali 40 Rs','Economy Food 15 Rs']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+            <a md-list-item [@animate]="'fadeInLeft'" (click)="showBevarages=!showBevarages" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;"> Beverages</a>
+            <div *ngIf="showBevarages">
+            <a md-list-item [@animate]="'fadeInLeft'" *ngFor="let i of ['Tea standard 5 Rs' , 'Tea - bag  7 Rs' , 'Tea - pot 10 Rs' , 'coffee 7 Rs', 'coffee pot 15 Rs', 'Water 500ml 10Rs' , 'Water 1 liter 15 Rs']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 30px;">{{i}}</a>
+          </div>
+
+          </div>
+          <a md-list-item (click)="showContacts=!showContacts"> Railway Helplines</a>
+          <div *ngIf="showContacts" [@animate]="'fadeInLeft'">
+            <a md-list-item *ngFor="let i of ['Customer Care No.- 011-39340000','Fax no. 011-23345400','Security 182','Medical 138','PNR 139','Clean My Coach 58888']" (click)="sidenav.close();" style="background-color: #e1f5fe; border-left: 4px solid #0091ea; color:#01579b; padding-left: 20px;">{{i}}</a>
+          </div>
+        </md-nav-list>
+    </div>
+</md-sidenav>
+                                                        <!-- sidenav ends-->
+<div *ngIf="!this.homecontent">
+  <div id="panocontent" >
+    <div id="pano" style="height:80vh;">
+      <md-input-container   style="background-color: rgba(10, 10, 10, 0.95); border-radius:3px; position:absolute; top:5px; left:5px; z-index:2;">
+            <input  id="input" #ip mdInput (keyup)="searchcommodity(ip.value);showcommres=true" placeholder="&nbsp;Search station facilities" style="color:white;">
+          </md-input-container>
+          <br><br><br>
+          <div *ngIf="showcommres">
+         <md-nav-list [@animate]="'fadeInDown'" style="width:200px; top: 30px; left: 10px;" dense>
+               <md-card *ngFor="let x of rescomm"  [@animate]="'fadeInDown'"  style="padding:0px;z-index:3;" (click)="this.dropdowncommodity(x);">
+                   <a md-list-item>
+                     {{ x }}</a>
+                 </md-card>
+               <md-divider></md-divider>
+         </md-nav-list>
+       </div>
+          <br><br><br><br>
+      <div [@animate]="swapout" id="map"></div>
+      <button md-fab id="swapbtn" (click)="swapout=swapout=='bounceOutRight'?'bounceInRight':'bounceOutRight'"><md-icon>map</md-icon></button>
+      </div>
+    </div>
+  </div>
+<div *ngIf="this.homecontent">
+  <div class="homecontent" [@animate]="'fadeIn'" >                                                         <!-- homecontent starts -->
+    <div style="font-size: 20px; color:white;">
+      <div style="margin-top: 20px;">
+        Take a quick tour of the application
+        <button md-raised-button style="color:black; margin-top: 10px; margin-left: 10px;">QUICK TUTORIAL</button>
+      </div>
+      <div style="margin-top: 20px;">
+        Take tour of your nearest railway station
+        <button md-raised-button style="color:black; margin-top: 10px; margin-left: 10px;" (click)="this.navcity()">NEAR ME</button>
+      </div>
+      <div style="margin-top: 50px;">
+        <span style="font-size: 30px;">Start your virtual tour</span><br>
+        <md-input-container style="margin-top: 10px;">
+          <input mdInput (keyup)="stnsearch(x.value)" id="ip" (focus)="hidden=true;stnsearch(x.value)" #x placeholder="Enter station name here">
+        </md-input-container>
+        <md-icon>search</md-icon>
+        <md-nav-list *ngIf="hidden" [@animate]="'fadeInDown'" style="width:300px; margin: 0 auto;" dense>
+            <md-card *ngFor="let x of this.res" [@animate]="'fadeInDown'"  style="padding:0px" (click)="this.stnserv.curr_stn=x.code;this.checkbase();hidden=false;this.homecontent=false;this.res=[]" >
+                <a md-list-item>
+                  {{ x.name }}</a>
+              </md-card>
+            <md-divider></md-divider>
+      </md-nav-list>
+      </div>
+    </div>
+  </div>
+</div>
+<md-sidenav #resultbar align="end" style="width:200px; max-width:50%;">
+        <md-nav-list>
+          <a md-list-item (click)="resultbar.close()" style="color:grey; background-color: #eeeeee;">CLOSE</a>
+
+            <md-card *ngFor="let x of this.commodityReply">
+                <md-card-subtitle>{{x.c_type}}</md-card-subtitle>
+                <md-card-title>{{x.name}}</md-card-title>
+                <md-card-content>
+                  <p>Platform: {{x.pf}}</p>
+                  <p>Distance From Current Location(Approximate) : {{this.getCommodityDistanceRounded(x)}} m.</p>
+                </md-card-content>
+                <md-card-actions>
+                  <button md-raised-button md-tooltip="Click Outside to Close The Resultbar" (click)="this.startTour(this.returnCoord(x.latlng)[0])" style="color:#0091ea;">Go To Location
+                  </button>
+                </md-card-actions>
+                <md-divider></md-divider>
+              </md-card>
+        </md-nav-list>
+      </md-sidenav>
+    <img src="../../footer.png" style="position:absolute; bottom:5px; left:0px; width:100%;">
+</md-sidenav-container>
