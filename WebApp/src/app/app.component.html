@@ -1,0 +1,199 @@
+<router-outlet></router-outlet>
+
+
+<div [@animate]="'bounceIn'" *ngIf="setVpnrF" class="dialog" style="background-color:#0091ea; color:white;margin: 0px auto;">
+  <div style="font-size: 25px; color: white; padding: 10px;">PNR Enquiry</div><br>
+  <md-input-container style="width: 150px;">
+    <input mdInput type="text" placeholder="Enter PNR Number" (keyup)="pnrData($event)" style="color:white; padding-left: 5px;">
+  </md-input-container>
+  <div *ngIf="pnrFf" style="color:white; font-size:14px; width:300px; max-width: 50%; margin: 0 auto;">*PNR Number Should Be of 10 digits.</div>
+  <div *ngIf="pnrFt">
+    <div *ngIf="wait"><md-spinner style="margin:0px auto; color:white; padding-top: 50px;"></md-spinner></div>
+    <div *ngIf="res2">
+      <table cellpadding="10px" cellspacing="0px" style="text-align:left; margin:0px auto; width: 500px; max-width: 90%;">
+        <tr> <td>PNR number: {{this.pnrOp.pnr}}</td> <td>Train name: {{this.pnrOp.train_name}}</td></tr>
+        <tr> <td>Train number: {{this.pnrOp.train_num}}</td> <td>Chart prepared: {{this.pnrOp.chart_prepared}}</td> </tr>
+        <tr> <td>Date of journey: {{this.pnrOp.doj}}</td> <td>Total passengers: {{this.pnrOp.total_passengers}}</td> </tr>
+        <tr> <td>From station: {{this.pnrOp.from_station.name}}({{this.pnrOp.from_station.code}})</td> <td>To station: {{this.pnrOp.to_station.name}}({{this.pnrOp.to_station.code}})</td> </tr>
+        <tr> <td>Boarding Point: {{this.pnrOp.boarding_point.name}}({{this.pnrOp.boarding_point.code}})</td> <td>Reservation up to: {{this.pnrOp.reservation_upto.name}}({{this.pnrOp.reservation_upto.code}})</td> </tr>
+      </table>
+      <br>
+      <table cellpadding="15px" cellspacing="0px" style="text-align:center; margin:0px auto; width: 500px; max-width: 90%;">
+        <tr style="background-color:white;color:#424242;"> <th>Passenger Number</th> <th>Current Status</th> <th>Booking Status</th> </tr>
+        <ng-container *ngFor="let i of this.pnrOp.passengers;let j=index;">
+          <tr *ngIf="((j%2)==0)" style="background-color:#eeeeee;color:#424242;"> <td>{{i.no}}</td> <td>{{i.current_status}}</td> <td>{{i.booking_status}}</td> </tr>
+          <tr *ngIf="((j%2)!=0)" style="background-color:white;color:#424242;"> <td>{{i.no}}</td> <td>{{i.current_status}}</td> <td>{{i.booking_status}}</td> </tr>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="wentw">Something went wrong. Please check the PNR number or try again later.</div>
+</div>
+<div [@animate]="'fadeIn'" *ngIf="setVpnrF" class="overlay" (click)="close()"></div>
+<!-- pnr wala form end... -->
+
+
+
+
+<!-- availability wala form... -->
+<div [@animate]="'bounceIn'" *ngIf="setVavlF" class="dialog" style="background-color:#0091ea;">
+  <div style="font-size: 25px; color: white; padding: 10px;">Seat Availability</div><br>
+  <md-input-container> <input mdInput type="number" #tno placeholder="Train Number" required style="color:white;"> </md-input-container>
+  <md-input-container> <input mdInput type="text" #fcd placeholder="From Station Code" required style="color:white;"> </md-input-container>
+  <md-input-container> <input mdInput type="text" #tcd placeholder="To Station Code" required style="color:white;"> </md-input-container>
+  <br>
+  <md-input-container> <input mdInput type="date" #dt required> </md-input-container>
+  <md-select placeholder="Quota" [(ngModel)]="qt">
+    <md-option *ngFor="let i of quota" [value]="i.code">
+      {{ i.quota }}
+    </md-option>
+  </md-select>
+  <md-select placeholder="Class" [(ngModel)]="cls">
+    <md-option *ngFor="let i of class" [value]="i.class">
+      {{ i.class }}
+    </md-option>
+  </md-select>
+
+  <button md-raised-button (click)="availabilityData(tno,fcd,tcd,dt)" style="margin: 20px;">Check Availability</button>
+
+  <div *ngIf="avlFf" style="font-size: 15px; color:white;">*Please check the details you have provided.</div>
+  <div *ngIf="avlFt">
+    <div *ngIf="wait"><md-spinner style="margin:0px auto; padding-top: 50px;"></md-spinner></div>
+    <div *ngIf="res2">
+      <table cellpadding="10px" cellspacing="0px" style="text-align:center; margin:0px auto; width: 500px; max-width: 90%;">
+        <tr style="background-color:white;color:#424242;"> <th *ngFor="let i of this.avlOp.headings">{{i}}</th> </tr>
+        <ng-container *ngFor="let i of this.avlOp.availability;let l=index;">
+          <tr *ngIf="((l%2)==0)" style="background-color:#eeeeee;color:#424242;"> <td *ngFor="let k of this.avlOp.headings;let j=index;">{{i[j]}}</td>  </tr>
+          <tr *ngIf="((l%2)!=0)" style="background-color:white;color:#424242;"> <td *ngFor="let k of this.avlOp.headings;let j=index;">{{i[j]}}</td> </tr>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="wentw" style="font-size: 15px; color:white;">*Something went wrong. Response Code 500. Please check the details or try again later.</div>
+</div>
+<div [@animate]="'fadeIn'" *ngIf="setVavlF" class="overlay" (click)="close()"></div>
+<!-- availability wala form end... -->
+
+
+
+<!-- route wala form... -->
+<div [@animate]="'bounceIn'" *ngIf="setVrtF" class="dialog" style="background-color:#0091ea;">
+  <div style="font-size: 25px; color: white; padding: 10px;">Train Route</div><br>
+  <md-input-container>
+    <input mdInput type="number" placeholder="Train Number" (keyup)="routeData($event)" style="color:white;">
+  </md-input-container>
+  <div *ngIf="rtFf" style="font-size: 15px; color:white;">*Train Number Should be of 5 Digits.</div>
+  <div *ngIf="rtFt">
+    <div *ngIf="wait"><md-spinner style="margin:0px auto; padding-top: 50px;"></md-spinner></div>
+    <div *ngIf="res2">
+      <table cellpadding="10px" cellspacing="0px" style="color: white; padding: 20px; text-align:left; margin: 0 auto;">
+        <tr>
+          <td>Train Number: <b>{{this.rtOp.train_base.train_no}}</b></td>
+          <td>Train Name: <b>{{this.rtOp.train_base.train_name}}</b></td>
+        </tr>
+        <tr>
+          <td>Start From: <b>{{this.rtOp.train_base.start_code}}</b></td>
+          <td>End At: <b>{{this.rtOp.train_base.end_code}}</b></td>
+        </tr>
+      </table>
+      <table cellpadding="10px" cellspacing="0px" style="color: white; padding: 20px; text-align:left; margin: 0 auto;">
+        <tr style="background-color:white;color:#424242;"> <th><b>S.no.</b></th> <th><b>Day</b></th> <th><b>Station Name</b></th> <th><b>Arrival</b></th> <th><b>Departure</b></th></tr>
+        <ng-container *ngFor="let i of this.rtOp.route;let l=index;">
+          <tr *ngIf="((l%2)==0)" style="background-color:#e0e0e0;color:#424242;"> <td>{{i.index}}</td> <td>{{i.day}}</td> <td>{{i.code}}</td> <td>{{i.depart}}</td> <td>{{i.reach}}</td> </tr>
+          <tr *ngIf="((l%2)!=0)" style="background-color:white;color:#424242;"> <td>{{i.index}}</td> <td>{{i.day}}</td> <td>{{i.code}}</td> <td>{{i.depart}}</td> <td>{{i.reach}}</td> </tr>
+        </ng-container>
+      </table>
+    </div>
+  </div>
+</div>
+<div [@animate]="'fadeIn'" *ngIf="setVrtF" class="overlay" (click)="close()"></div>
+<!-- route wala form end... -->
+
+
+
+<!-- fare wala form... -->
+<div [@animate]="'bounceIn'" *ngIf="setVtrfF" class="dialog" style="background-color:#0091ea;">
+  <div style="font-size: 25px; color: white; padding: 10px;">Fare</div><br>
+  <md-input-container>
+    <input mdInput type="number" #trainno placeholder="Train Number"  required style="color:white;">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput type="text" #fcodA placeholder="From(Station Code)"  required style="color:white;">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput type="text" #tcodA placeholder="To(Station Code)"  required style="color:white;">
+  </md-input-container>
+  <br>
+  <div style="margin-top: 10px;">
+    <md-select placeholder="Age Group" [(ngModel)]="acod">
+      <md-option *ngFor="let i of age_code" [value]="i.code">
+        {{ i.for }}
+      </md-option>
+    </md-select>
+    <md-select placeholder="Quota" [(ngModel)]="qt">
+      <md-option *ngFor="let i of quota" [value]="i.code">
+        {{ i.quota }}
+      </md-option>
+    </md-select>
+  </div>
+  <br>
+  <button md-raised-button (click)="fareData(trainno,fcodA,tcodA)"style="margin: 10px;">Check Fare</button>
+
+  <div *ngIf="trfFf" style="font-size: 15px; color:white;">*Please recheck the details.</div>
+  <div *ngIf="trfFt">
+    <div *ngIf="wait"><md-spinner style="margin:0px auto; padding-top: 50px;"></md-spinner></div>
+    <div *ngIf="res2">
+      <table cellpadding="10px" cellspacing="0px" style="color: white; padding: 20px; text-align:left; margin: 0 auto;">
+        <tr style="background-color:white;color:#424242;"> <th *ngFor="let i of this.trfOp.headings"><b>{{i}}</b></th> </tr>
+        <tr style="background-color:#e0e0e0;color:#424242;"> <td *ngFor="let i of this.trfOp.fare">{{i}} INR</td>  </tr>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="wentw" style="font-size: 15px; color:white;">Something went wrong! Please check the details or try again later.</div>
+</div>
+<div [@animate]="'fadeIn'" *ngIf="setVtrfF" class="overlay" (click)="close()"></div>
+<!-- fare wala form end... -->
+
+
+<!-- running wala form... -->
+<div [@animate]="'bounceIn'" *ngIf="setVtrrsF" class="dialog" style="background-color:#0091ea;">
+  <div style="font-size: 25px; color: white; padding: 10px;">Train Running Status</div><br>
+  <md-input-container>
+    <input mdInput #sco placeholder="Station_Code" style="color:white;">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput type="number" #trainno placeholder="Train Number"  required style="color:white;">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput #dt type="date">
+  </md-input-container>
+  <br>
+  <button md-raised-button (click)="runningData(trainno,sco,dt)" style="margin: 15px;">Check Status</button>
+  <div *ngIf="trsFf" style="font-size: 15px; color:white;">*Train number should be of 5 digit and station code must be of 2 to 5 alphabets.</div>
+  <div *ngIf="trsFt">
+    <div *ngIf="wait"><md-spinner style="margin:0px auto; padding-top: 50px;"></md-spinner></div>
+    <div *ngIf="res2">
+      <table cellpadding="10px" cellspacing="0px" style="color: white; padding: 20px; text-align:left; margin: 0 auto;">
+        <tr>
+          <td>Train Number:<b> {{this.runningOp.train_num}}</b></td>
+          <td>Train Name:<b>{{this.runningOp.train_name}}</b></td>
+          <td>Journey Station:<b>{{this.runningOp.journey_station.split('&nbsp;').join(' ')}}</b></td>
+        </tr>
+        <tr>
+          <td>Journey Date:<b> {{this.runningOp.journey_date}}</b></td>
+          <td>Scheduled Arriving Time:<b> {{this.runningOp.sch_arr}}</b></td>
+          <td>Actual Arriving Time:<b> {{this.runningOp.ach_arr}}</b></td>
+          <td>Delay in Arrinving:<b> {{this.runningOp.delay_arr}}</b></td>
+        </tr>
+        <tr>
+          <td>Scheduled Departure:<b> {{this.runningOp.sch_dep}}</b></td>
+          <td>Actual Departure:<b> {{this.runningOp.ach_dep}}</b></td>
+          <td>Delay in Departure:<b> {{this.runningOp.delay_dep}}</b></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="wentw" style="font-size: 15px; color:white;">Something went wrong. Please check the details you have provided or try again later.</div>
+</div>
+<div [@animate]="'fadeIn'" *ngIf="setVtrrsF" class="overlay" (click)="close()"></div>
+<!-- running wala form end... -->
